@@ -37,6 +37,11 @@
 Adafruit_LTR329::Adafruit_LTR329(void) {}
 
 /*!
+ *    @brief  Instantiates a new LTR303 class
+ */
+Adafruit_LTR303::Adafruit_LTR303(void) {}
+
+/*!
  *    @brief  Setups the hardware for talking to the LTR329
  *    @param  theWire An optional pointer to an I2C interface
  *    @return True if initialization was successful, otherwise false.
@@ -245,4 +250,119 @@ uint16_t Adafruit_LTR329::readVisible(void) {
   }
 
   return visible_plus_ir - infrared;
+}
+
+/*!
+ *  @brief  Enables the interrupt output pin
+ *  @param en Pass in 'true' to enable the output pin, false to tri-state
+ */
+void Adafruit_LTR303::enableInterrupt(bool en) {
+  // we must be in non-active mode to change this register!
+  bool curr_mode = enabled();
+  enable(false);
+  // now change the bit...
+
+  Adafruit_I2CRegister intreg =
+      Adafruit_I2CRegister(i2c_dev, LTR303_REG_INTERRUPT);
+  Adafruit_I2CRegisterBits enbit =
+      Adafruit_I2CRegisterBits(&intreg, 1, 1); // # bits, bit_shift
+
+  enbit.write(en);
+
+  // and reset the mode
+  enable(curr_mode);
+}
+
+/*!
+ *  @brief  The INT pin  has a polarity setting for active low or high!
+ *  @param pol For active LOW set to 'false', for active HIGH set to 'true'
+ */
+void Adafruit_LTR303::setInterruptPolarity(bool pol) {
+  // we must be in non-active mode to change this register!
+  bool curr_mode = enabled();
+  enable(false);
+  // now change the bit...
+
+  Adafruit_I2CRegister intreg =
+      Adafruit_I2CRegister(i2c_dev, LTR303_REG_INTERRUPT);
+  Adafruit_I2CRegisterBits polbit =
+      Adafruit_I2CRegisterBits(&intreg, 1, 2); // # bits, bit_shift
+
+  polbit.write(pol);
+
+  // and reset the mode
+  enable(curr_mode);
+}
+
+/*!
+ *  @brief  The low threshold for ALS reading interrupts : values BELOW this
+ * trigger an interrupt
+ *  @param value This number is compared against the 'visible + IR' data
+ * register
+ */
+void Adafruit_LTR303::setLowThreshold(uint16_t value) {
+  Adafruit_I2CRegister thresh =
+      Adafruit_I2CRegister(i2c_dev, LTR303_REG_THRESHLOW_LSB, 2, LSBFIRST);
+  thresh.write(value);
+}
+
+/*!
+ *  @brief  The low threshold for ALS reading interrupt getter
+ *  @returns The value that ALS compares for low-value interrupts
+ */
+uint16_t Adafruit_LTR303::getLowThreshold(void) {
+  Adafruit_I2CRegister thresh =
+      Adafruit_I2CRegister(i2c_dev, LTR303_REG_THRESHLOW_LSB, 2, LSBFIRST);
+  return thresh.read();
+}
+
+/*!
+ *  @brief  The high threshold for ALS reading interrupts : values ABOVE this
+ * trigger an interrupt
+ *  @param value This number is compared against the 'visible + IR' data
+ * register
+ */
+void Adafruit_LTR303::setHighThreshold(uint16_t value) {
+  Adafruit_I2CRegister thresh =
+      Adafruit_I2CRegister(i2c_dev, LTR303_REG_THRESHHIGH_LSB, 2, LSBFIRST);
+  thresh.write(value);
+}
+
+/*!
+ *  @brief  The high threshold for ALS reading interrupt getter
+ *  @returns The value that ALS compares for high-value interrupts
+ */
+uint16_t Adafruit_LTR303::getHighThreshold(void) {
+  Adafruit_I2CRegister thresh =
+      Adafruit_I2CRegister(i2c_dev, LTR303_REG_THRESHHIGH_LSB, 2, LSBFIRST);
+  return thresh.read();
+}
+
+/*!
+ *  @brief  The default behavior is an interrupt on every value that is
+ * under/over the threshold ranges. However, you're more likely to get spurious
+ * IRQs, so we can set it to require "N counts in a row" before an IRQ.
+ *  @param counts 1 count is IRQ for each reading, 2 counts means we need two
+ * outside readings in a row, etc up to 16.
+ */
+void Adafruit_LTR303::setIntPersistance(uint8_t counts) {
+  Adafruit_I2CRegister persistreg =
+      Adafruit_I2CRegister(i2c_dev, LTR303_REG_INTPERSIST);
+  Adafruit_I2CRegisterBits persist =
+      Adafruit_I2CRegisterBits(&persistreg, 4, 0); // # bits, bit_shift
+
+  persist.write(counts - 1);
+}
+
+/*!
+ *  @brief Getter for the number of counts required to trigger IRQ
+ *  @returns 1 count is IRQ for each reading, 2 counts means we need two outside
+ * readings in a row, etc up to 16.
+ */
+uint8_t Adafruit_LTR303::getIntPersistance(void) {
+  Adafruit_I2CRegister persistreg =
+      Adafruit_I2CRegister(i2c_dev, LTR303_REG_INTPERSIST);
+  Adafruit_I2CRegisterBits persist =
+      Adafruit_I2CRegisterBits(&persistreg, 4, 0); // # bits, bit_shift
+  return persist.read() + 1;
 }

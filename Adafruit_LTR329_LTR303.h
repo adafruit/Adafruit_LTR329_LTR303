@@ -31,6 +31,12 @@
 #define LTR329_CH1DATA 0x88         ///< Data for channel 1 (read all 4 bytes!)
 #define LTR329_MEAS_RATE 0x85       ///< Integration time and data rate
 
+// These registers on LTR-303 only!
+#define LTR303_REG_INTERRUPT 0x8F ///< Register to enable/configure int output
+#define LTR303_REG_THRESHHIGH_LSB 0x97 ///< ALS 'high' threshold limit
+#define LTR303_REG_THRESHLOW_LSB 0x99  ///< ALS 'low' threshold limit
+#define LTR303_REG_INTPERSIST 0x9E ///< Register for setting the IRQ persistance
+
 /*!    @brief  Sensor gain for ALS  */
 typedef enum {
   LTR3XX_GAIN_1 = 0,
@@ -66,7 +72,7 @@ typedef enum {
 
 /*!
  *    @brief  Class that stores state and functions for interacting with
- *            LTR329 UV Sensor
+ *            LTR329 Light Sensor
  */
 class Adafruit_LTR329 {
 public:
@@ -90,12 +96,34 @@ public:
   bool readBothChannels(uint16_t &ch0, uint16_t &ch1);
   uint16_t readVisible(void);
 
+protected:
+  Adafruit_I2CDevice *i2c_dev = NULL; ///< The underlying I2C interface
+
 private:
   Adafruit_I2CRegister *StatusReg = NULL;
   Adafruit_I2CRegisterBits *DataReadyBit = NULL;
   Adafruit_I2CRegisterBits *DataInvalidBit = NULL;
+};
 
-  Adafruit_I2CDevice *i2c_dev = NULL;
+/*!
+ *    @brief  Class that stores state and functions for interacting with
+ *            LTR303 Light Sensor
+ */
+class Adafruit_LTR303 : public Adafruit_LTR329 {
+public:
+  Adafruit_LTR303();
+
+  void enableInterrupt(bool en);
+  void setInterruptPolarity(bool pol);
+
+  void setLowThreshold(uint16_t value);
+  uint16_t getLowThreshold(void);
+
+  void setHighThreshold(uint16_t value);
+  uint16_t getHighThreshold(void);
+
+  void setIntPersistance(uint8_t counts);
+  uint8_t getIntPersistance(void);
 };
 
 #endif
