@@ -48,8 +48,8 @@ void setup() {
   }
 
   ltr.setMeasurementRate(LTR3XX_MEASRATE_200);
-  Serial.print("Integration Time (ms): ");
-  switch (ltr.getIntegrationTime()) {
+  Serial.print("Measurement Rate (ms): ");
+  switch (ltr.getMeasurementRate()) {
     case LTR3XX_MEASRATE_50: Serial.println(50); break;
     case LTR3XX_MEASRATE_100: Serial.println(100); break;
     case LTR3XX_MEASRATE_200: Serial.println(200); break;
