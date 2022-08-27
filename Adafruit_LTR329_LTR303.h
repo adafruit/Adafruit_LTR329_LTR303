@@ -36,7 +36,7 @@ typedef enum {
   LTR3XX_GAIN_1 = 0,
   LTR3XX_GAIN_2 = 1,
   LTR3XX_GAIN_4 = 2,
-  LTR3XX_GAIN_8 = 3, 
+  LTR3XX_GAIN_8 = 3,
   // 4 & 5 unused!
   LTR3XX_GAIN_48 = 6,
   LTR3XX_GAIN_96 = 7,
@@ -53,7 +53,6 @@ typedef enum {
   LTR3XX_INTEGTIME_300,
   LTR3XX_INTEGTIME_350,
 } ltr329_integrationtime_t;
-
 
 /*!    @brief Measurement rates, in milliseconds */
 typedef enum {
@@ -90,7 +89,6 @@ public:
   bool newDataAvailable(void);
   bool readBothChannels(uint16_t &ch0, uint16_t &ch1);
   uint16_t readVisible(void);
-
 
 private:
   Adafruit_I2CRegister *StatusReg = NULL;
