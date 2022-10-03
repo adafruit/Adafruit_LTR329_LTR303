@@ -239,20 +239,6 @@ bool Adafruit_LTR329::readBothChannels(uint16_t &ch0, uint16_t &ch1) {
 }
 
 /*!
- *  @brief  Read both 16-bit channels at once, and subract to get visible light
- *  @returns 16-bit visible data, or 0xFFFF if invalid data (overrun)
- */
-uint16_t Adafruit_LTR329::readVisible(void) {
-  uint16_t visible_plus_ir, infrared;
-
-  if (!readBothChannels(visible_plus_ir, infrared)) {
-    return 0xFFFF;
-  }
-
-  return visible_plus_ir - infrared;
-}
-
-/*!
  *  @brief  Enables the interrupt output pin
  *  @param en Pass in 'true' to enable the output pin, false to tri-state
  */

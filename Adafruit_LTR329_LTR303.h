@@ -94,7 +94,6 @@ public:
 
   bool newDataAvailable(void);
   bool readBothChannels(uint16_t &ch0, uint16_t &ch1);
-  uint16_t readVisible(void);
 
 protected:
   Adafruit_I2CDevice *i2c_dev = NULL; ///< The underlying I2C interface
