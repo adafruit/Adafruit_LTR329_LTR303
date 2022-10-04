@@ -1,14 +1,14 @@
-/*************************************************** 
+/***************************************************
   This is an example for the LTR303 light sensor that reads both channels
   and demonstrates how to set gain, interrupts and check data validity
 
   Designed specifically to work with the LTR-303 light sensor from Adafruit
   ----> https://www.adafruit.com/product/5610
 
-  These sensors use I2C to communicate, 2 pins are required to  
+  These sensors use I2C to communicate, 2 pins are required to
   interface
  ****************************************************/
- 
+
 #include "Adafruit_LTR329_LTR303.h"
 
 Adafruit_LTR303 ltr = Adafruit_LTR303();
@@ -83,16 +83,16 @@ void setup() {
 void loop() {
   bool valid;
   uint16_t visible_plus_ir, infrared;
-  
+
   if (ltr.newDataAvailable()) {
     valid = ltr.readBothChannels(visible_plus_ir, infrared);
     if (valid) {
-      Serial.print("Visible + IR: "); 
+      Serial.print("CH0 Visible + IR: ");
       Serial.print(visible_plus_ir);
-      Serial.print("\t\tInfrared: "); 
+      Serial.print("\t\tCH1 Infrared: ");
       Serial.println(infrared);
     }
   }
-  
+
   delay(100);
 }
